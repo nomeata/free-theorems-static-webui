@@ -65,11 +65,11 @@ main = mainWidgetWithHead htmlHead $ do
             let dmTheorem        = fmap (prettyTheorem [] . asTheorem) <$> dmIntermediate
             let dmSpecialTheorem = fmap (prettyTheorem [] . asTheorem . specialiseAll) <$> dmIntermediate
 
-            bootstrapCard "The Free Theroem" Nothing $
+            bootstrapCard "The Free Theorem" Nothing $
                 el "pre" $
                     dynText $ (maybe "" (T.pack.show)) <$> dmTheorem
 
-            bootstrapCard "The Free Theroem" (Just "with relations specialized to functions") $
+            bootstrapCard "The Free Theorem" (Just "with relations specialized to functions") $
                 el "pre" $
                     dynText $ (maybe "" (T.pack.show)) <$> dmSpecialTheorem
 
