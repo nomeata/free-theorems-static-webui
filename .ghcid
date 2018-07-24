@@ -1,0 +1,2 @@
+-c "cabal new-repl -w ghc-8.2" -T "Main.main"
+--restart free-theorems-static-webui.cabal
