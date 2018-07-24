@@ -43,11 +43,11 @@ main = mainWidgetWithHead htmlHead $ do
                     ]) $ def
                    & dropdownConfig_attributes .~ (return $ "class" =: "form-control")
 
-            dExtraDecls <- divClass "form-group" $ do
-                el "label" $ text "If you need extra declarations, you can enter them here:"
-                fmap _textArea_value . textArea $ def
-                   & textAreaConfig_initialValue .~ "myId :: a -> a"
-                   & textAreaConfig_attributes .~ (return $ "class" =: "form-control")
+            -- dExtraDecls <- divClass "form-group" $ do
+            --     el "label" $ text "If you need extra declarations, you can enter them here:"
+            --     fmap _textArea_value . textArea $ def
+            --        & textAreaConfig_initialValue .~ "myId :: a -> a"
+            --        & textAreaConfig_attributes .~ (return $ "class" =: "form-control")
 
             let decls = knownDeclarations
 
