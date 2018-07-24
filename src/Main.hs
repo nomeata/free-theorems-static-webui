@@ -4,6 +4,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 
 import Data.Traversable
+import Data.Maybe
 import qualified Data.Text as T
 
 import Reflex.Dom
@@ -30,7 +31,10 @@ main = mainWidgetWithHead htmlHead $ do
                    & textInputConfig_initialValue .~ "(a -> Bool) -> [a] -> [a]"
                    & textInputConfig_attributes .~ (return $ "class" =: "form-control")
 
-            dmSig <- errorDiv $ (parseTypeString decls . T.unpack <$> dType)
+            dmSig <- errorDiv $ do
+                decls <- dDecls
+                type_ <- T.unpack <$> dType
+                return $ parseTypeString decls type_
 
             dModel <- divClass "form-group" $ do
                 el "label" $ text "Please choose a sublanguage of Haskell:"
@@ -43,17 +47,19 @@ main = mainWidgetWithHead htmlHead $ do
                     ]) $ def
                    & dropdownConfig_attributes .~ (return $ "class" =: "form-control")
 
-            -- dExtraDecls <- divClass "form-group" $ do
-            --     el "label" $ text "If you need extra declarations, you can enter them here:"
-            --     fmap _textArea_value . textArea $ def
-            --        & textAreaConfig_initialValue .~ "myId :: a -> a"
-            --        & textAreaConfig_attributes .~ (return $ "class" =: "form-control")
+            dExtraSrc <- divClass "form-group" $ do
+                el "label" $ text "If you need extra declarations, you can enter them here:"
+                fmap _textArea_value . textArea $ def
+                   & textAreaConfig_initialValue .~ "data Unit = Unit"
+                   & textAreaConfig_attributes .~ (return $ "class" =: "form-control")
 
-            let decls = knownDeclarations
+            dExtraDecls <- errorDiv $ parseDeclarations knownDeclarations . T.unpack <$> dExtraSrc
+            let dDecls = (knownDeclarations ++) . fromMaybe [] <$> dExtraDecls
 
             let dmIntermediate   = do
                     sig <- dmSig
                     model <- dModel
+                    decls <- dDecls
                     return $ interpret decls model =<< sig
 
             let dmTheorem        = fmap (prettyTheorem [] . asTheorem) <$> dmIntermediate
