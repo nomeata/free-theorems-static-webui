@@ -2,10 +2,12 @@
 {-# LANGUAGE MonoLocalBinds #-}
 {-# LANGUAGE RecursiveDo #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 import Data.Traversable
 import Data.Maybe
 import qualified Data.Text as T
+import Control.Monad.IO.Class
 
 import Reflex.Dom
 
@@ -100,6 +102,19 @@ main = mainWidgetWithHead htmlHead $ do
             ]) (return ())
         el "title" (text "Free Theorems!")
 
+-- | Errors are delayed, but successes go through immediatelly
+delayError :: (PerformEvent t m, MonadHold t m, TriggerEvent t m, MonadIO (Performable m)) =>
+    Dynamic t (Either a b) -> m (Dynamic t (Either a b))
+delayError d = do
+    delayedEvents <- delay 0.5 (updated d)
+    d' <- holdDyn Nothing (Just <$> delayedEvents)
+    return $ do
+        now <- d
+        past <- d'
+        return $ case (past, now) of
+            (Nothing, _)     -> now    -- before any delayed events arrive
+            (_, Right _ )    -> now  -- current value is good
+            (Just x, Left _) -> x -- current value is bad, delay
 
 bootstrapCard :: DomBuilder t m => T.Text -> Maybe T.Text -> m a -> m a
 bootstrapCard title subtitle inside = do
@@ -108,12 +123,13 @@ bootstrapCard title subtitle inside = do
         for subtitle $ \t -> elClass "h6" "card-subtitle" $ text t
         divClass "card-body" $ inside
 
-errorDiv :: (PostBuild t m, DomBuilder t m) =>
+errorDiv :: (PerformEvent t m, MonadHold t m, TriggerEvent t m, MonadIO (Performable m), PostBuild t m, DomBuilder t m) =>
     Dynamic t (Either String a) ->
     m (Dynamic t (Maybe a))
 errorDiv inp = do
-    elDynAttr "div" (attribs <$> inp) (dynText $ either T.pack (const "") <$> inp)
-    return $ (either (const Nothing) Just <$> inp)
+    delayed <- delayError inp
+    elDynAttr "div" (attribs <$> delayed) (dynText $ either T.pack (const "") <$> delayed)
+    return $ (either (const Nothing) Just <$> delayed)
   where
     attribs (Left _)  = "class" =: "alert alert-danger"
     attribs (Right _) = "display" =: "none"
