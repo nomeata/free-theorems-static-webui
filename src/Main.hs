@@ -97,7 +97,7 @@ main = mainWidgetWithHead htmlHead $ do
 
 bootstrapCard :: DomBuilder t m => T.Text -> Maybe T.Text -> m a -> m a
 bootstrapCard title subtitle inside = do
-    divClass "card my-3" $ do
+    divClass "card my-3 p-2" $ do
         elClass "h5" "card-title" $ text title
         for subtitle $ \t -> elClass "h6" "card-subtitle" $ text t
         divClass "card-body" $ inside
