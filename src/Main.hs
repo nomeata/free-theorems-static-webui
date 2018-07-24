@@ -67,6 +67,15 @@ main = mainWidgetWithHead htmlHead $ do
                 el "pre" $
                     dynText $ (maybe "" (T.pack.show)) <$> dmSpecialTheorem
 
+            el "p" $ do
+              text "This is an online interface to "
+              elAttr "a" ("href" =: "http://hackage.haskell.org/package/free-theorems") $
+                 text "the free-theorems Haskell package"
+              text ". Source code for this UI at "
+              elAttr "a" ("href" =: "https://github.com/nomeata/free-theorems-static-webui") $
+                 text "https://github.com/nomeata/free-theorems-static-webui"
+              text ". Contributions welcome!"
+
         return ()
   where
     htmlHead :: DomBuilder t m => m ()
@@ -88,7 +97,7 @@ main = mainWidgetWithHead htmlHead $ do
 
 bootstrapCard :: DomBuilder t m => T.Text -> Maybe T.Text -> m a -> m a
 bootstrapCard title subtitle inside = do
-    divClass "card" $ do
+    divClass "card my-3" $ do
         elClass "h5" "card-title" $ text title
         for subtitle $ \t -> elClass "h6" "card-subtitle" $ text t
         divClass "card-body" $ inside
