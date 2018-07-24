@@ -6,7 +6,7 @@ containers-0.5.10.2-9DI272UIy6s2SQuD3F70c5:286545
 dependent-map-0.2.4.0-d9ca756c75d2db8d77b22178b0db4c00fc79775d57fbae6f1216ca08dd5b48a9:52690
 dependent-sum-0.4-a46c138eaa428e38bc77222a1c1229c0ade81490ffe59cf16d03d3d1d45346af:409720
 free-theorems-0.3.2.0-inplace:1076295
-ghc-prim:                113660
+ghc-prim:                113664
 ghcjs-base-0.2.0.0.20180719-f975047131e6eae7c9e75f4bf367d0e21663fb3eeef740ecfdb659e0f6e08985:4368
 ghcjs-dom-jsffi-0.9.2.0-d3aaf6541f63e38b44a8f1e65ed502e83acfbb45a05b9cb51d9d1ffaf670a9f9:268734
 ghcjs-prim-0.1.1.0-Lw1qzAJ9IR31NFzWC6t27Z:7877
@@ -140,7 +140,7 @@ ghc-prim
     GHC.CString:                        26006
     GHC.Classes:                        3052
     GHC.Tuple:                          3368
-    GHC.Types:                          81234
+    GHC.Types:                          81238
 
 ghcjs-base-0.2.0.0.20180719-f975047131e6eae7c9e75f4bf367d0e21663fb3eeef740ecfdb659e0f6e08985
     Data.JSString.Text:                 2079
