@@ -1,0 +1,3 @@
+#!/bin/bash
+
+runhaskell -isrc -fglasgow-exts src/Runtests.hs
