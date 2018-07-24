@@ -1,4 +1,4 @@
-
+{-# LANGUAGE FlexibleContexts #-}
 
 
 -- | Provides error handling functions for checking parser output.

@@ -1,4 +1,4 @@
-
+{-# LANGUAGE FlexibleContexts #-}
 
 
 -- | Defines a function to parse a string into a list of declarations.

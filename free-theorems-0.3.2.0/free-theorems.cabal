@@ -38,7 +38,7 @@ library
   build-depends:
       mtl >= 1.0
     , haskell-src >= 1.0
-    , haskell-src-exts >= 1.13.5 
+    -- , haskell-src-exts >= 1.13.5 
     , pretty >= 1.0.0.0
     , containers >= 0.1.0.1
   if impl(ghc >= 6.10)
@@ -53,7 +53,6 @@ library
       Language.Haskell.FreeTheorems
       Language.Haskell.FreeTheorems.Syntax
       Language.Haskell.FreeTheorems.Parser.Haskell98
-      Language.Haskell.FreeTheorems.Parser.Hsx
       Language.Haskell.FreeTheorems.Theorems
       Language.Haskell.FreeTheorems.BasicSyntax
       Language.Haskell.FreeTheorems.ValidSyntax
@@ -83,3 +82,5 @@ library
     extensions: ScopedTypeVariables
   else 
     extensions: PatternSignatures
+
+  ghc-options: -w

@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 -- | Declares an intermediate data structure along with a function to transform
 --   type signatures into the intermediate structure. There are also other
 --   functions working on intermediate structures, namely to retrieve relation
