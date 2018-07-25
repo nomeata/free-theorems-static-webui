@@ -4,6 +4,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 import Data.Traversable
 import Data.Maybe
@@ -13,9 +14,9 @@ import Control.Monad.Trans.Maybe
 import Control.Monad.Trans.Class
 import Control.Monad
 import Data.Monoid
+import Git.Embed
 
 import Reflex.Dom
-
 
 import Language.Haskell.FreeTheorems
 import Language.Haskell.FreeTheorems.Theorems (Theorem)
@@ -111,6 +112,9 @@ main = mainWidgetWithHead htmlHead $ do
               text ". Source code for this UI at "
               elAttr "a" ("href" =: "https://github.com/nomeata/free-theorems-static-webui") $
                  text "https://github.com/nomeata/free-theorems-static-webui"
+              text $ ". You are seeing "
+              elAttr "a" ("href" =: ("https://github.com/nomeata/free-theorems-static-webui/commit/" <> T.pack $(embedGitRevision))) $
+                text $ "revision " <> T.pack $(embedGitShortRevision)
               text ". Contributions welcome!"
 
         return ()

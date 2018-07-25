@@ -22,5 +22,6 @@ executable free-theorems-static-webui
   build-depends: text
   build-depends: transformers
   build-depends: reflex-dom == 0.4.*
+  build-depends: git-embed
   hs-source-dirs:      src
   default-language:    Haskell2010
