@@ -103,6 +103,8 @@ main = mainWidgetWithHead htmlHead $ do
         el "title" (text "Free Theorems!")
 
 -- | Errors are delayed, but successes go through immediatelly
+-- Actually disabled for now, I like the snappy behaviour better
+{-
 delayError :: (PerformEvent t m, MonadHold t m, TriggerEvent t m, MonadIO (Performable m)) =>
     Dynamic t (Either a b) -> m (Dynamic t (Either a b))
 delayError d = do
@@ -115,6 +117,7 @@ delayError d = do
             (Nothing, _)     -> now    -- before any delayed events arrive
             (_, Right _ )    -> now  -- current value is good
             (Just x, Left _) -> x -- current value is bad, delay
+-}
 
 bootstrapCard :: DomBuilder t m => T.Text -> Maybe T.Text -> m a -> m a
 bootstrapCard title subtitle inside = do
@@ -127,9 +130,8 @@ errorDiv :: (PerformEvent t m, MonadHold t m, TriggerEvent t m, MonadIO (Perform
     Dynamic t (Either String a) ->
     m (Dynamic t (Maybe a))
 errorDiv inp = do
-    delayed <- delayError inp
-    elDynAttr "div" (attribs <$> delayed) (dynText $ either T.pack (const "") <$> delayed)
-    return $ (either (const Nothing) Just <$> delayed)
+    elDynAttr "div" (attribs <$> inp) (dynText $ either T.pack (const "") <$> inp)
+    return $ (either (const Nothing) Just <$> inp)
   where
     attribs (Left _)  = "class" =: "alert alert-danger"
     attribs (Right _) = "display" =: "none"
