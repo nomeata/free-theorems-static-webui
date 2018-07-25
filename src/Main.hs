@@ -8,6 +8,9 @@ import Data.Traversable
 import Data.Maybe
 import qualified Data.Text as T
 import Control.Monad.IO.Class
+import Control.Monad.Trans.Maybe
+import Control.Monad.Trans.Class
+import Control.Monad
 
 import Reflex.Dom
 
@@ -23,8 +26,8 @@ deriving instance Ord TheoremType
 
 main :: IO ()
 main = mainWidgetWithHead htmlHead $ do
-    divClass "container" $ divClass "row" $ divClass "col" $ do
-        el "h1" $ text "Free Theorems!"
+    divClass "container" $ do
+        elClass "h1" "display-1" $ text "Free Theorems!"
         el "form" $ mdo
             dType <- divClass "form-group" $ do
                 el "label" $
@@ -33,7 +36,7 @@ main = mainWidgetWithHead htmlHead $ do
                    & textInputConfig_initialValue .~ "(a -> Bool) -> [a] -> [a]"
                    & textInputConfig_attributes .~ (return $ "class" =: "form-control")
 
-            dmSig <- errorDiv $ do
+            dSig <- errorDiv $ do
                 decls <- dDecls
                 type_ <- T.unpack <$> dType
                 return $ parseTypeString decls type_
@@ -56,24 +59,17 @@ main = mainWidgetWithHead htmlHead $ do
                    & textAreaConfig_attributes .~ (return $ "class" =: "form-control")
 
             dExtraDecls <- errorDiv $ parseDeclarations knownDeclarations . T.unpack <$> dExtraSrc
-            let dDecls = (knownDeclarations ++) . fromMaybe [] <$> dExtraDecls
+            let dDecls = (knownDeclarations ++) . fromMaybe [] <$> runMaybeT dExtraDecls
 
-            let dmIntermediate   = do
-                    sig <- dmSig
-                    model <- dModel
-                    decls <- dDecls
-                    return $ interpret decls model =<< sig
+            let dIntermediate   = joinMaybeT $
+                    interpret <$> lift dDecls <*> lift dModel <*> dSig
 
-            let dmTheorem        = fmap (prettyTheorem [] . asTheorem) <$> dmIntermediate
-            let dmSpecialTheorem = fmap (prettyTheorem [] . asTheorem . specialiseAll) <$> dmIntermediate
-
-            bootstrapCard "The Free Theorem" Nothing $
-                el "pre" $
-                    dynText $ (maybe "" (T.pack.show)) <$> dmTheorem
-
-            bootstrapCard "The Free Theorem" (Just "with relations specialized to functions") $
-                el "pre" $
-                    dynText $ (maybe "" (T.pack.show)) <$> dmSpecialTheorem
+            theoremCard Nothing
+                dDecls dIntermediate
+            theoremCard (Just "with relations specialized to functions") 
+                dDecls (specialiseAll <$> dIntermediate)
+            theoremCard (Just "with relations specialized to inverses of functions") 
+                dDecls (specialiseAllInverse <$> dIntermediate)
 
             el "p" $ do
               text "This is an online interface to "
@@ -102,6 +98,20 @@ main = mainWidgetWithHead htmlHead $ do
             ]) (return ())
         el "title" (text "Free Theorems!")
 
+theoremCard variant dDecls dIntermediate = do
+    bootstrapCard "The Free Theorem" variant $ do
+        el "pre" $ do
+            dynText $ fromMaybe "" <$> (runMaybeT $ T.pack.show <$> dTheorem)
+        el "pre" $ do
+            dynText $ fromMaybe "" <$> (runMaybeT $ T.pack <$> dLifts)
+        el "pre" $ do
+            dynText $ fromMaybe "" <$> (runMaybeT $ T.pack <$> dClasses)
+  where
+    dTheorem = prettyTheorem [] . asTheorem <$> dIntermediate
+    dLifts   = (unlines . map show) <$> (unfoldLifts <$> lift dDecls <*> dIntermediate)
+    dClasses = (unlines . map show) <$> (unfoldClasses <$> lift dDecls <*> dIntermediate)
+
+
 -- | Errors are delayed, but successes go through immediatelly
 -- Actually disabled for now, I like the snappy behaviour better
 {-
@@ -128,14 +138,16 @@ bootstrapCard title subtitle inside = do
 
 errorDiv :: (PerformEvent t m, MonadHold t m, TriggerEvent t m, MonadIO (Performable m), PostBuild t m, DomBuilder t m) =>
     Dynamic t (Either String a) ->
-    m (Dynamic t (Maybe a))
+    m (MaybeT (Dynamic t) a)
 errorDiv inp = do
     elDynAttr "div" (attribs <$> inp) (dynText $ either T.pack (const "") <$> inp)
-    return $ (either (const Nothing) Just <$> inp)
+    return $ MaybeT $ either (const Nothing) Just <$> inp
   where
     attribs (Left _)  = "class" =: "alert alert-danger"
     attribs (Right _) = "display" =: "none"
 
+joinMaybeT :: Functor m => MaybeT m (Maybe a) -> MaybeT m a
+joinMaybeT = MaybeT . fmap join . runMaybeT
 
 css :: T.Text
 css = T.unlines
