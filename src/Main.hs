@@ -63,7 +63,7 @@ main = mainWidgetWithHead htmlHead $ do
                            & checkboxConfig_attributes .~
                             (("class" =: "form-check-input" <>) <$> dDisabled)
                         elClass "label" "form-check-label" $ do
-                            text "inequational theormes"
+                            text "inequational theormes (only relevant in a language with bottoms)"
                         return $ dIneq
 
                 let combine Nothing      _     = BasicSubset
@@ -79,7 +79,7 @@ main = mainWidgetWithHead htmlHead $ do
                     dHide <- fmap _checkbox_value $ checkbox False $ def
                        & checkboxConfig_attributes .~ pure ("class" =: "form-check-input")
                     elClass "label" "form-check-label" $ do
-                        text "hide type instantiations"
+                        text "hide type instantiations in the theorem presentation"
 
                     return $ (<$> dHide) $ \case
                             True  -> [OmitTypeInstantiations]
