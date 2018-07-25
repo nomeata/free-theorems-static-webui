@@ -1,6 +1,6 @@
 code size summary per package:
 
-base:                    638257
+base:                    632124
 bimap-0.3.3-a2e1f714cf258f1b3152b18c3bd04cbbcbef403fbbf57ed6e20c0fa11aea6952:109461
 containers-0.5.10.2-9DI272UIy6s2SQuD3F70c5:286545
 dependent-map-0.2.4.0-d9ca756c75d2db8d77b22178b0db4c00fc79775d57fbae6f1216ca08dd5b48a9:52690
@@ -12,18 +12,16 @@ ghcjs-dom-jsffi-0.9.2.0-d3aaf6541f63e38b44a8f1e65ed502e83acfbb45a05b9cb51d9d1ffa
 ghcjs-prim-0.1.1.0-Lw1qzAJ9IR31NFzWC6t27Z:7877
 haskell-src-1.0.3.0-179ed80f459296af7fe16ca09c97fceabd4bcede3f3cd146e8b00c7bef655ce6:1734522
 integer-gmp:             6220
-main:                    349685
+main:                    341294
 pretty-1.1.3.3-C0ohXD3PAbYEH1bCEDflEy:2445
 primitive-0.6.3.0-23c5cbada1a13cff3afb5af7dbfb009c241759421f57adbd20403df642e8ec6c:777
 ref-tf-0.4.0.1-cb56cefe687139f29c164b0fa0b065472b88b2ffcf6a28078010a1981a2e1087:3787
-reflex-0.5.0.20180719-d6945f313993512208c5d4684a4865bcfa969457a50c96b19b8928f99b4e9250:1575717
+reflex-0.5.0.20180719-d6945f313993512208c5d4684a4865bcfa969457a50c96b19b8928f99b4e9250:1565794
 reflex-dom-core-0.4.0.20180719-3129239085c6d32e507ed900f8149c4074e84dae3e7e976ce4293386416b5010:1075166
 syb-0.7-862ead35d4bfc89d881589e410c9f5db80477a0f3ccf1583caf6388d923db33f:18149
 text-1.2.3.0-350ffb493e637f97d8ed29addb7af33c0a7e0a47cff2439e1c274e175cf4b2d6:18330
-these-0.7.4-304cad106544deedd337e2471686e75140853f9e98e9327971de7cf3a92b8758:2050
-time-1.8.0.2-Lf3cI0N6xjD8pQyNwoRaJx:11738
-transformers-0.5.2.0-HtEf5nV5vOXJgl7pipqNkj:8536
-unbounded-delays-0.1.1.0-01072ae27d0dffd9c073f2ecd5ec764f9814ca632164df0fc90c2dfb08fd13f1:22567
+these-0.7.4-304cad106544deedd337e2471686e75140853f9e98e9327971de7cf3a92b8758:12977
+transformers-0.5.2.0-HtEf5nV5vOXJgl7pipqNkj:29385
 
 
 code size per module:
@@ -35,8 +33,7 @@ base
     Control.Monad.IO.Class:             1371
     Data.Char:                          117323
     Data.Data:                          3891
-    Data.Either:                        137
-    Data.Fixed:                         219
+    Data.Either:                        219
     Data.Functor.Product:               2651
     Data.Maybe:                         14024
     Data.OldList:                       66
@@ -82,7 +79,7 @@ base
     GHC.MVar:                           1580
     GHC.Num:                            174
     GHC.Ptr:                            9132
-    GHC.Read:                           35436
+    GHC.Read:                           29440
     GHC.Real:                           620
     GHC.STRef:                          25838
     GHC.Show:                           4153
@@ -177,7 +174,7 @@ integer-gmp
 
 main
     FTTools:                            47331
-    KnownDeclarations:                  220399
+    KnownDeclarations:                  212008
     Main:                               81955
 
 pretty-1.1.3.3-C0ohXD3PAbYEH1bCEDflEy
@@ -195,7 +192,7 @@ reflex-0.5.0.20180719-d6945f313993512208c5d4684a4865bcfa969457a50c96b19b8928f99b
     Data.FastWeakBag:                   18785
     Data.Functor.Misc:                  9155
     Data.Map.Misc:                      2084
-    Data.WeakBag:                       64057
+    Data.WeakBag:                       63797
     Reflex.Class:                       19634
     Reflex.Collection:                  14973
     Reflex.Dynamic:                     2799
@@ -209,14 +206,13 @@ reflex-0.5.0.20180719-d6945f313993512208c5d4684a4865bcfa969457a50c96b19b8928f99b
     Reflex.Patch.Map:                   6163
     Reflex.Patch.MapWithMove:           127633
     Reflex.PerformEvent.Base:           5186
-    Reflex.PerformEvent.Class:          60804
+    Reflex.PerformEvent.Class:          57653
     Reflex.PostBuild.Base:              1344
     Reflex.PostBuild.Class:             179701
     Reflex.Requester.Base:              1
     Reflex.Requester.Class:             953054
-    Reflex.Spider.Internal:             6198
-    Reflex.Time:                        30604
-    Reflex.TriggerEvent.Base:           1743
+    Reflex.Spider.Internal:             30604
+    Reflex.TriggerEvent.Base:           1429
     Reflex.TriggerEvent.Class:          3712
 
 reflex-dom-core-0.4.0.20180719-3129239085c6d32e507ed900f8149c4074e84dae3e7e976ce4293386416b5010
@@ -243,19 +239,13 @@ text-1.2.3.0-350ffb493e637f97d8ed29addb7af33c0a7e0a47cff2439e1c274e175cf4b2d6
 
 these-0.7.4-304cad106544deedd337e2471686e75140853f9e98e9327971de7cf3a92b8758
     Data.Align:                         1239
-    Data.These:                         811
-
-time-1.8.0.2-Lf3cI0N6xjD8pQyNwoRaJx
-    Data.Time.Clock.Internal.NominalDiffTime:11738
+    Data.These:                         11738
 
 transformers-0.5.2.0-HtEf5nV5vOXJgl7pipqNkj
     Control.Monad.Trans.Reader:         6818
-    Control.Monad.Trans.State.Strict:   1718
-
-unbounded-delays-0.1.1.0-01072ae27d0dffd9c073f2ecd5ec764f9814ca632164df0fc90c2dfb08fd13f1
-    Control.Concurrent.Thread.Delay:    22567
+    Control.Monad.Trans.State.Strict:   22567
 
 
 
-packed metadata: 2113338
+packed metadata: 2104709
 
