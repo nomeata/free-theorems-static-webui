@@ -7,7 +7,7 @@ license:             MIT
 license-file:        LICENSE
 author:              Joachim Breitner
 maintainer:          mail@joachim-breitner.de
--- copyright:
+copyright:           2018 Joachim Breitner
 category:            Language
 build-type:          Simple
 extra-source-files:  CHANGELOG.md
