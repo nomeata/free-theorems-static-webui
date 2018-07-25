@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE MonoLocalBinds #-}
 {-# LANGUAGE RecursiveDo #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE FlexibleContexts #-}
 
@@ -11,6 +12,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Trans.Maybe
 import Control.Monad.Trans.Class
 import Control.Monad
+import Data.Monoid
 
 import Reflex.Dom
 
@@ -41,16 +43,47 @@ main = mainWidgetWithHead htmlHead $ do
                 type_ <- T.unpack <$> dType
                 return $ parseTypeString decls type_
 
-            dModel <- divClass "form-group" $ do
-                el "label" $ text "Please choose a sublanguage of Haskell:"
-                fmap _dropdown_value $ dropdown BasicSubset (pure $ mconcat
-                    [ BasicSubset =: "no bottoms (hence no general recursion and no selective strictness)"
-                    , SubsetWithFix EquationalTheorem =: "general recursion but no selective strictness"
-                    , SubsetWithFix InequationalTheorem =: "general recursion but no selective strictness, inequational theorems "
-                    , SubsetWithSeq EquationalTheorem =: "general recursion and selective strictness"
-                    , SubsetWithSeq InequationalTheorem =: "general recursion and selective strictness, inequational theorems"
-                    ]) $ def
-                   & dropdownConfig_attributes .~ (return $ "class" =: "form-control")
+            dModel <- do
+                dSubSet <- divClass "form-group" $ do
+                    el "label" $ text "Please choose a sublanguage of Haskell:"
+                    fmap _dropdown_value $ dropdown Nothing (pure $ mconcat
+                        [ Nothing    =: "no bottoms (hence no general recursion and no selective strictness)"
+                        , Just False =: "general recursion but no selective strictness"
+                        , Just True  =: "general recursion and selective strictness"
+                        ]) $ def
+                       & dropdownConfig_attributes .~ (return $ "class" =: "form-control")
+
+                let dDisabled = (<$> dSubSet) $ \case
+                        Nothing -> "disabled" =: "disabled"
+                        Just _ ->   mempty
+
+                dIneq <- divClass "form-group" $ do
+                    divClass "form-check" $ do
+                        dIneq <- fmap _checkbox_value $ checkbox False $ def
+                           & checkboxConfig_attributes .~
+                            (("class" =: "form-check-input" <>) <$> dDisabled)
+                        elClass "label" "form-check-label" $ do
+                            text "inequational theormes"
+                        return $ dIneq
+
+                let combine Nothing      _     = BasicSubset
+                    combine (Just False) False = SubsetWithFix EquationalTheorem
+                    combine (Just False) True  = SubsetWithFix InequationalTheorem
+                    combine (Just True)  False = SubsetWithSeq EquationalTheorem
+                    combine (Just True)  True  = SubsetWithSeq InequationalTheorem
+
+                return $ combine <$> dSubSet <*> dIneq
+
+            dOptions <- divClass "form-group" $ do
+                divClass "form-check" $ do
+                    dHide <- fmap _checkbox_value $ checkbox False $ def
+                       & checkboxConfig_attributes .~ pure ("class" =: "form-check-input")
+                    elClass "label" "form-check-label" $ do
+                        text "hide type instantiations"
+
+                    return $ (<$> dHide) $ \case
+                            True  -> [OmitTypeInstantiations]
+                            False -> []
 
             dExtraSrc <- divClass "form-group" $ do
                 el "label" $ text "If you need extra declarations, you can enter them here:"
@@ -64,12 +97,11 @@ main = mainWidgetWithHead htmlHead $ do
             let dIntermediate   = joinMaybeT $
                     interpret <$> lift dDecls <*> lift dModel <*> dSig
 
-            theoremCard Nothing
-                dDecls dIntermediate
-            theoremCard (Just "with relations specialized to functions")
-                dDecls (specialiseAll <$> dIntermediate)
-            let invCard = theoremCard (Just "with relations specialized to inverses of functions")
-                    dDecls (specialiseAllInverse <$> dIntermediate)
+            theoremCard dDecls dOptions dIntermediate Nothing
+            theoremCard dDecls dOptions (specialiseAllInverse <$> dIntermediate)
+                (Just "with all permissable relation variables reduced to functions")
+            let invCard = theoremCard dDecls dOptions (specialiseAllInverse <$> dIntermediate)
+                    (Just "with all permissable relation variables reduced to inverses of functions")
             dyn_ $ when <$> (isInequational <$> dModel) <*> pure invCard
 
             el "p" $ do
@@ -99,7 +131,7 @@ main = mainWidgetWithHead htmlHead $ do
             ]) (return ())
         el "title" (text "Free Theorems!")
 
-theoremCard variant dDecls dIntermediate = do
+theoremCard dDecls dOptions dIntermediate variant = do
     bootstrapCard "The Free Theorem" variant $ do
         el "pre" $ do
             dynText $ fromMaybe "" <$> (runMaybeT $ T.pack.show <$> dTheorem)
@@ -108,9 +140,12 @@ theoremCard variant dDecls dIntermediate = do
         el "pre" $ do
             dynText $ fromMaybe "" <$> (runMaybeT $ T.pack <$> dClasses)
   where
-    dTheorem = prettyTheorem [] . asTheorem <$> dIntermediate
-    dLifts   = (unlines . map show) <$> (unfoldLifts <$> lift dDecls <*> dIntermediate)
-    dClasses = (unlines . map show) <$> (unfoldClasses <$> lift dDecls <*> dIntermediate)
+    dTheorem = (\o i -> prettyTheorem o (asTheorem i))
+        <$> lift dOptions <*> dIntermediate
+    dLifts   = (\d o i -> unlines $ map (show . prettyUnfoldedLift o) $ unfoldLifts d i)
+        <$> lift dDecls <*> lift dOptions <*> dIntermediate
+    dClasses = (\d o i -> unlines $ map (show . prettyUnfoldedClass o) $ unfoldClasses d i)
+        <$> lift dDecls <*> lift dOptions <*> dIntermediate
 
 
 -- | Errors are delayed, but successes go through immediatelly
