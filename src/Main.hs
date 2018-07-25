@@ -66,10 +66,11 @@ main = mainWidgetWithHead htmlHead $ do
 
             theoremCard Nothing
                 dDecls dIntermediate
-            theoremCard (Just "with relations specialized to functions") 
+            theoremCard (Just "with relations specialized to functions")
                 dDecls (specialiseAll <$> dIntermediate)
-            theoremCard (Just "with relations specialized to inverses of functions") 
-                dDecls (specialiseAllInverse <$> dIntermediate)
+            let invCard = theoremCard (Just "with relations specialized to inverses of functions")
+                    dDecls (specialiseAllInverse <$> dIntermediate)
+            dyn_ $ when <$> (isInequational <$> dModel) <*> pure invCard
 
             el "p" $ do
               text "This is an online interface to "
