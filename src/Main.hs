@@ -30,7 +30,7 @@ deriving instance Ord TheoremType
 main :: IO ()
 main = mainWidgetWithHead htmlHead $ do
     divClass "container" $ do
-        elClass "h1" "display-1" $ text "Free Theorems!"
+        elClass "h1" "display-3" $ text "Free Theorems!"
         el "form" $ mdo
             dType <- divClass "form-group" $ do
                 el "label" $
