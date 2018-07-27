@@ -64,7 +64,7 @@ main = mainWidgetWithHead htmlHead $ do
                            & checkboxConfig_attributes .~
                             (("class" =: "form-check-input" <>) <$> dDisabled)
                         elClass "label" "form-check-label" $ do
-                            text "inequational theormes (only relevant in a language with bottoms)"
+                            text "inequational theorems (only relevant in a language with bottoms)"
                         return $ dIneq
 
                 let combine Nothing      _     = BasicSubset
