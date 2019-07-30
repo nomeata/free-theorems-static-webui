@@ -12,8 +12,8 @@ addons:
       key_url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
     packages:
     - cabal-install-head
-    - ghc-8.2.2
-    - ghcjs-8.2
+    - ghc-8.4
+    - ghcjs-8.4
     - alex-3.1.4
     - happy-1.19.5
 
@@ -32,14 +32,10 @@ before_install:
     - export PATH=/opt/alex/3.1.4/bin:$PATH
     - export PATH=/opt/happy/1.19.5/bin:$PATH
     - export PATH=/opt/ghc/bin:$PATH
-    - export PATH=/opt/ghcjs/8.2/bin:$PATH
+    - export PATH=/opt/ghcjs/8.4/bin:$PATH
     - export PATH=$TRAVIS_BUILD_DIR/node_modules/.bin:$PATH
     - du -sh $HOME/.ghcjs $HOME/.ghc $HOME/.cabal/bin $HOME/.cabal/lib $HOME/.cabal/share
     - rm -f ~/.cabal/config
-    - cabal update # to ensure the config exists
-    - 'fgrep hackage-ghcjs-overlay.nomeata.de/ $HOME/.cabal/config ||
-      echo -e "repository ghcjs-overlay\n url: http://hackage-ghcjs-overlay.nomeata.de/\n secure: True\n root-keys:\n key-threshold: 0" >> ~/.cabal/config'
-    - cat ~/.cabal/config
     - cabal update
 
 jobs:
