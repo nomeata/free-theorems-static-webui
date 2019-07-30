@@ -99,7 +99,7 @@ main = mainWidgetWithHead htmlHead $ do
                     interpret <$> lift dDecls <*> lift dModel <*> dSig
 
             theoremCard dDecls dOptions dIntermediate Nothing
-            theoremCard dDecls dOptions (specialiseAllInverse <$> dIntermediate)
+            theoremCard dDecls dOptions (specialiseAll <$> dIntermediate)
                 (Just "with all permissable relation variables reduced to functions")
             let invCard = theoremCard dDecls dOptions (specialiseAllInverse <$> dIntermediate)
                     (Just "with all permissable relation variables reduced to inverses of functions")

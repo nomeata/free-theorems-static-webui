@@ -10,7 +10,7 @@
 
 module Language.Haskell.FreeTheorems.PrettyTypes where
 
-
+import Prelude hiding ((<>))
 
 import Text.PrettyPrint
 

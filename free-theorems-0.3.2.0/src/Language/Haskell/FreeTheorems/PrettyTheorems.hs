@@ -15,7 +15,7 @@ module Language.Haskell.FreeTheorems.PrettyTheorems (
   , prettyUnfoldedClass
 ) where
 
-
+import Prelude hiding ((<>))
 
 import Data.List (partition, find)
 import Data.Maybe (mapMaybe)
