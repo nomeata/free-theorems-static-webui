@@ -23,6 +23,7 @@ import Control.Monad.Trans (lift)
 import Data.Generics ( Typeable, Data, everywhere, everything, listify, mkT
                      , mkQ, extQ)
 import qualified Data.Map as Map (Map, empty, lookup, insert, map)
+import Data.Maybe (fromMaybe)
 
 import Language.Haskell.FreeTheorems.LanguageSubsets
 import Language.Haskell.FreeTheorems.Syntax 
@@ -32,14 +33,6 @@ import Language.Haskell.FreeTheorems.Frontend.TypeExpressions
     ( substituteTypeVariables )
 import Language.Haskell.FreeTheorems.NameStores 
     ( relationNameStore, typeExpressionNameStore, functionNameStore1, functionNameStore2 )
-
-
--- helper to stay compatible with new Map.lookup for base >= 4.0.0.0
-maybeToMonad :: Monad m => Maybe a -> m a
-maybeToMonad mb = 
-    case mb of
-    Just x  -> return x
-    Nothing -> fail "Data.Map.lookup: Key not found"
 
 ------- Intermediate data structure -------------------------------------------
 
@@ -134,14 +127,14 @@ interpretM l t = case t of
     -- in the initial type expression, all occurring type variables are bound
     -- by type abstraction which are resolved by updating the environment, see
     -- below) and create a relation consisting solely of the relation variable
-  TypeVar v -> maybeToMonad.Map.lookup v =<< ask
-  
-    -- either create a basic relation or a lift relation, depending on the 
+  TypeVar v -> fromMaybe (error "Data.Map.lookup: Key not found") . Map.lookup v <$> ask
+
+    -- either create a basic relation or a lift relation, depending on the
     -- subtypes
   TypeCon c ts -> do
     rs <- mapM (interpretM l) ts   -- interpret the subtypes
     ri <- mkRelationInfo l t       -- create the relation info
-        
+
         -- checks if an intermediate relation is a basic case
     let basic rel = case rel of { RelBasic _ -> True ; otherwise -> False }
 
