@@ -18,7 +18,7 @@ description:
     may be derived in addition to classical equational results.
 category:       Language
 tested-with: 	GHC==7.6.1
-cabal-version:  >= 1.2.3
+cabal-version:  >= 1.8
 build-type:	Simple
 
 extra-source-files:
