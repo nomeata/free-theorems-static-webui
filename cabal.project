@@ -1,7 +1,6 @@
-packages: . free-theorems-0.3.2.0/
+packages: . free-theorems
 
 package reflex-dom
   flags: +use-warp -webkit2gtk
 
 constraints: primitive < 0.6.4
-
