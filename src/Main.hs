@@ -29,15 +29,21 @@ deriving instance Ord TheoremType
 
 main :: IO ()
 main = mainWidgetWithHead htmlHead $ do
+    let
+      checkbox checked attrs0 modAttrs = fmap _inputElement_checked $ inputElement $ def
+        & inputElementConfig_initialChecked .~ checked
+        & inputElementConfig_elementConfig . elementConfig_initialAttributes .~ ("class" =: "form-check-input" <> "type" =: "checkbox" <> attrs0)
+        & inputElementConfig_elementConfig . elementConfig_modifyAttributes .~ modAttrs
+
     divClass "container" $ do
         elClass "h1" "display-3" $ text "Free Theorems!"
         el "form" $ mdo
             dType <- divClass "form-group" $ do
                 el "label" $
                     text "Please enter a (polymorphic) type, e.g. \"(a -> Bool) -> [a] -> [a]\":"
-                fmap _textInput_value . textInput $ def
-                   & textInputConfig_initialValue .~ "(a -> Bool) -> [a] -> [a]"
-                   & textInputConfig_attributes .~ (return $ "class" =: "form-control")
+                fmap _inputElement_value . inputElement $ def
+                   & inputElementConfig_initialValue .~ "(a -> Bool) -> [a] -> [a]"
+                   & inputElementConfig_elementConfig . elementConfig_initialAttributes .~ "class" =: "form-control"
 
             dSig <- errorDiv $ do
                 decls <- dDecls
@@ -45,24 +51,24 @@ main = mainWidgetWithHead htmlHead $ do
                 return $ parseTypeString decls type_
 
             dModel <- do
-                dSubSet <- divClass "form-group" $ do
+                let subSet0 = Nothing
+                eSubSet <- divClass "form-group" $ do
                     el "label" $ text "Please choose a sublanguage of Haskell:"
-                    fmap _dropdown_value $ dropdown Nothing (pure $ mconcat
+                    fmap _dropdown_change $ dropdown subSet0 (pure $ mconcat
                         [ Nothing    =: "no bottoms (hence no general recursion and no selective strictness)"
                         , Just False =: "general recursion but no selective strictness"
                         , Just True  =: "general recursion and selective strictness"
                         ]) $ def
                        & dropdownConfig_attributes .~ (return $ "class" =: "form-control")
 
-                let dDisabled = (<$> dSubSet) $ \case
-                        Nothing -> "disabled" =: "disabled"
-                        Just _ ->   mempty
+                let attrs f = ("disabled" =:) . \case
+                        Nothing -> f "disabled"
+                        Just _ -> mempty
 
                 dIneq <- divClass "form-group" $ do
                     divClass "form-check" $ do
-                        dIneq <- fmap _checkbox_value $ checkbox False $ def
-                           & checkboxConfig_attributes .~
-                            (("class" =: "form-check-input" <>) <$> dDisabled)
+                        dIneq <- checkbox False (attrs id subSet0) (attrs Just <$> eSubSet)
+
                         elClass "label" "form-check-label" $ do
                             text "inequational theorems (only relevant in a language with bottoms)"
                         return $ dIneq
@@ -73,12 +79,12 @@ main = mainWidgetWithHead htmlHead $ do
                     combine (Just True)  False = SubsetWithSeq EquationalTheorem
                     combine (Just True)  True  = SubsetWithSeq InequationalTheorem
 
+                dSubSet <- holdDyn subSet0 eSubSet
                 return $ combine <$> dSubSet <*> dIneq
 
             dOptions <- divClass "form-group" $ do
                 divClass "form-check" $ do
-                    dHide <- fmap _checkbox_value $ checkbox False $ def
-                       & checkboxConfig_attributes .~ pure ("class" =: "form-check-input")
+                    dHide <- checkbox False mempty never
                     elClass "label" "form-check-label" $ do
                         text "hide type instantiations in the theorem presentation"
 
@@ -88,9 +94,9 @@ main = mainWidgetWithHead htmlHead $ do
 
             dExtraSrc <- divClass "form-group" $ do
                 el "label" $ text "If you need extra declarations, you can enter them here:"
-                fmap _textArea_value . textArea $ def
-                   & textAreaConfig_initialValue .~ "data Unit = Unit"
-                   & textAreaConfig_attributes .~ (return $ "class" =: "form-control")
+                fmap _textAreaElement_value . textAreaElement $ def
+                   & textAreaElementConfig_initialValue .~ "data Unit = Unit"
+                   & textAreaElementConfig_elementConfig . elementConfig_initialAttributes .~ "class" =: "form-control"
 
             dExtraDecls <- errorDiv $ parseDeclarations knownDeclarations . T.unpack <$> dExtraSrc
             let dDecls = (knownDeclarations ++) . fromMaybe [] <$> runMaybeT dExtraDecls
