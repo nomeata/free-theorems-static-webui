@@ -1,4 +1,10 @@
-packages: . free-theorems
+packages: .
 
 package reflex-dom
   flags: +use-warp -webkit2gtk
+
+source-repository-package
+  type: git
+  location: https://github.com/ichistmeinname/free-theorems
+  tag: d0fb032d22e4243715a8247aeb50d54ad0ea7db1
+  subdir: free-theorems
